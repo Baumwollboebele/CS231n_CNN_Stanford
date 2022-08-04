@@ -55,7 +55,8 @@ def svm_loss_naive(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    dW  = dW / num_train
+    dW += 2*reg*W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -78,7 +79,20 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    s = X.dot(W)
+
+    correct_class_score = s[np.arange(len(s)), y]
+
+    span = s - correct_class_score.reshape(-1, 1) + 1
+    span[np.arange(len(span)), y] = 0
+
+    num_span = -np.sum(span > 0, axis=1)
+
+    span[span < 0] = 0
+
+    loss = span.sum()
+    loss /= X.shape[0]
+    loss += reg * np.sum(W * W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -93,7 +107,14 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    span[span > 0] = 1
+  
+    span[np.arange(len(span)), y] = num_span
+
+    dW = X.T.dot(span)
+
+    dW = dW / X.shape[0]
+    dW += reg*2*W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
